@@ -10,16 +10,17 @@ import SwiftUI
 enum OrbDirection: CaseIterable {
     case up, down, left, right, upLeft, upRight, downLeft, downRight
     
-    var symbol: String {
+    // sf symbols makes diagonals really annoying so i rotate instead
+    var angle: Angle {
         switch self {
-        case .up: return "arrow.up"
-        case .down: return "arrow.down"
-        case .left: return "arrow.left"
-        case .right: return "arrow.right"
-        case .upLeft: return "arrow.up.left"
-        case .upRight: return "arrow.up.right"
-        case .downLeft: return "arrow.down.left"
-        case .downRight: return "arrow.down.right"
+        case .up: return .degrees(0)
+        case .upRight: return .degrees(45)
+        case .right: return .degrees(90)
+        case .downRight: return .degrees(135)
+        case .down: return .degrees(180)
+        case .downLeft: return .degrees(225)
+        case .left: return .degrees(270)
+        case .upLeft: return .degrees(315)
         }
     }
     
@@ -56,14 +57,23 @@ struct OrbView: View {
                         .strokeBorder(orb.color, lineWidth: orb.isSelected ? 2 : 1)
                 )
             
-            Image(systemName: orb.direction.symbol)
+            Image(systemName: "arrow.up")
+                .resizable()
+                .scaledToFit()
+                .rotationEffect(orb.direction.angle)
+                .scaleEffect(0.5)
                 .foregroundStyle(orb.isSelected ? .white : orb.color)
         }
+        .aspectRatio(1, contentMode: .fit)
         .scaleEffect(orb.isSelected ? 1.1 : 1.0)
         .animation(.spring(response: 0.2, dampingFraction: 0.6), value: orb.isSelected)
     }
 }
 
-#Preview {
+#Preview("straight") {
     OrbView(orb: Orb(direction: .up))
+}
+
+#Preview("diag") {
+    OrbView(orb: Orb(direction: .upLeft))
 }
