@@ -22,25 +22,23 @@ struct LevelView: View {
     let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 5)
     
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(1...25, id: \.self) { level in
-                Button {
-                    if manager.isUnlocked(level) {
-                        // go to level
-                    }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .strokeBorder(manager.isUnlocked(level) ? Color.black : Color.gray, lineWidth: 1)
-                            .scaledToFit()
-                        VStack(spacing: 4) {
-                            Text("\(level)")
-                                .font(.headline)
-                            HStack(spacing: 2) {
-                                ForEach(0..<3, id: \.self) { i in
-                                    Image(systemName: i < manager.stars(for: level) ? "star.fill" : "star")
-                                        .font(.caption2)
-                                        .foregroundStyle(.yellow)
+        NavigationStack {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(1...25, id: \.self) { level in
+                    NavigationLink(destination: OrbGridView(level: generateLevel(level: level))) {
+                        ZStack {
+                            Circle()
+                                .strokeBorder(manager.isUnlocked(level) ? Color.black : Color.gray, lineWidth: 1)
+                                .scaledToFit()
+                            VStack(spacing: 4) {
+                                Text("\(level)")
+                                    .font(.headline)
+                                HStack(spacing: 2) {
+                                    ForEach(0..<3, id: \.self) { i in
+                                        Image(systemName: i < manager.stars(for: level) ? "star.fill" : "star")
+                                            .font(.caption2)
+                                            .foregroundStyle(.yellow)
+                                    }
                                 }
                             }
                         }

@@ -12,7 +12,7 @@ import SwiftData
 struct ConnectorApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LevelView()
                 .modelContainer(for: LevelManager.self)
         }
     }

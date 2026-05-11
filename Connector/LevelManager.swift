@@ -44,12 +44,12 @@ class LevelManager {
     }
 }
 
-func generate(level: Int) -> Level {
+func generateLevel(level: Int) -> Level {
     // 25 levels for now?
-    let gridSize = min(2 + level / 3, 10)
+    let gridSize = min(3 + level / 3, 10)
     let timeLimit = max(60 - Double(level) * 2, 30)
     
-    let allColors: [Color] = [.red, .blue, .green, .yellow, .purple, .orange, .pink, .brown, .gray, .black, .white]
+    let allColors: [Color] = [.red, .blue, .green, .yellow, .purple, .orange, .pink, .brown, .gray]
     let colorCount = min(1 + level / 2, allColors.count)
     let allowedColors = Array(allColors.prefix(colorCount))
     
@@ -65,4 +65,16 @@ func generate(level: Int) -> Level {
         allowedColors: allowedColors,
         allowedDirections: allowedDirections
     )
+}
+
+func getNewOrb(level: Level) -> Orb {
+    return Orb(color: level.allowedColors.randomElement()!, direction: level.allowedDirections.randomElement()!)
+}
+
+func generateOrbs(level: Level) -> [Orb] {
+    var orbs:[Orb] = []
+    for _ in 0..<level.orbCount {
+        orbs.append(getNewOrb(level: level))
+    }
+    return orbs
 }
