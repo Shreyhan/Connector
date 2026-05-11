@@ -8,7 +8,7 @@
 import SwiftUI
 
 func getNewOrb() -> Orb {
-    return Orb(direction: OrbDirection.allCases.randomElement()!)
+    return Orb(color: [Color.blue, Color.red, Color.yellow, Color.green].randomElement()!, direction: OrbDirection.allCases.randomElement()!)
 }
 
 func createOrbArray(_ n: Int) -> [Orb] {

@@ -36,6 +36,7 @@ struct OrbGridView: View {
     @State private var cellHeight: CGFloat = 0
     
     var body: some View {
+        
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: gridSize), spacing: 0) {
             ForEach(orbs) { orb in
                 OrbView(orb: orb)
@@ -45,16 +46,56 @@ struct OrbGridView: View {
         }
         .background(
             GeometryReader { geo in //create clear background to calculate size
-                Color.clear.onAppear {
-                    let rowCount = orbs.count / gridSize
-                    cellWidth = geo.size.width / CGFloat(gridSize)
-                    cellHeight = geo.size.height / CGFloat(rowCount)
+                ZStack {
+                    Color.clear.onAppear {
+                        let rowCount = orbs.count / gridSize
+                        cellWidth = geo.size.width / CGFloat(gridSize)
+                        cellHeight = geo.size.height / CGFloat(rowCount)
+                    }
+                    if !selectedChain.isEmpty {
+                        Canvas { context, size in
+                            for i in 0..<(selectedChain.count - 1) {
+                                let fromIndex = selectedChain[i]
+                                let toIndex = selectedChain[i + 1]
+                                
+                                let fromRow = fromIndex / gridSize
+                                let fromCol = fromIndex % gridSize
+                                let toRow = toIndex / gridSize
+                                let toCol = toIndex % gridSize
+                                
+                                let from = CGPoint(
+                                    x: CGFloat(fromCol) * cellWidth + cellWidth / 2,
+                                    y: CGFloat(fromRow) * cellHeight + cellHeight / 2
+                                )
+                                let to = CGPoint(
+                                    x: CGFloat(toCol) * cellWidth + cellWidth / 2,
+                                    y: CGFloat(toRow) * cellHeight + cellHeight / 2
+                                )
+                                
+                                // Blend from one orb's color to the next
+                                let fromColor = orbs[fromIndex].color
+                                let toColor = orbs[toIndex].color
+                                let gradient = Gradient(colors: [fromColor, toColor])
+                                let shading = GraphicsContext.Shading.linearGradient(
+                                    gradient,
+                                    startPoint: from,
+                                    endPoint: to
+                                )
+                                
+                                var segment = Path()
+                                segment.move(to: from)
+                                segment.addLine(to: to)
+                                context.stroke(segment, with: shading,
+                                               style: StrokeStyle(lineWidth: CGFloat(100 / gridSize), lineCap: .round))
+                            }
+                        }
+                        .allowsHitTesting(false)
+                    }
                 }
             }
         )
-        .coordinateSpace(name: "grid")
         .gesture(
-            DragGesture(minimumDistance: 0, coordinateSpace: .named("grid"))
+            DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     let location = value.location
                     
@@ -64,6 +105,10 @@ struct OrbGridView: View {
                     guard row >= 0, row < orbs.count / gridSize, col >= 0, col < gridSize else { return }
                     
                     let index = row * gridSize + col
+                    if selectedChain.count >= 2 && selectedChain[selectedChain.count - 2] == index {
+                        let removed = selectedChain.removeLast()
+                        orbs[removed].isSelected = false
+                    }
                     
                     if !selectedChain.contains(index) {
                         if let lastIndex = selectedChain.last {
@@ -89,10 +134,9 @@ struct OrbGridView: View {
                     selectedChain.removeAll()
                 }
         )
-        
     }
 }
 
 #Preview {
-    OrbGridView(gridSize: 5, orbs: createOrbArray(30))
+    OrbGridView(gridSize: 10, orbs: createOrbArray(100))
 }
