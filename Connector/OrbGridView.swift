@@ -30,7 +30,7 @@ func deleteChain(selectedChain: [Int], orbs: [Orb], gridSize: Int, level: Level)
 
 struct OrbGridView: View {
     @State var level: Level
-    @State var orbs: [Orb] = []
+    @State var orbs: [Orb]
     @State var selectedChain: [Int] = []
     @State private var cellWidth: CGFloat = 0
     @State private var cellHeight: CGFloat = 0
@@ -43,9 +43,6 @@ struct OrbGridView: View {
                     .padding(5)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
-        }
-        .onAppear {
-            orbs = generateOrbs(level: level)
         }
         .background(
             GeometryReader { geo in //create clear background to calculate size

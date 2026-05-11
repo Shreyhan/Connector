@@ -25,7 +25,8 @@ struct LevelView: View {
         NavigationStack {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(1...25, id: \.self) { level in
-                    NavigationLink(destination: OrbGridView(level: generateLevel(level: level))) {
+                    let lev = generateLevel(level: level)
+                    NavigationLink(destination: OrbGridView(level: lev, orbs: generateOrbs(level: lev))) {
                         ZStack {
                             Circle()
                                 .strokeBorder(manager.isUnlocked(level) ? Color.black : Color.gray, lineWidth: 1)

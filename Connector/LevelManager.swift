@@ -7,14 +7,16 @@
 
 import SwiftUI
 import SwiftData
+import GameKit
 
 struct Level {
-    let id: Int
+    let num: Int
     let gridSize: Int
     let orbCount: Int
     let timeLimit: TimeInterval
     let allowedColors: [Color]
     let allowedDirections: [OrbDirection]
+    let rng: GKARC4RandomSource
 }
 
 @Model
@@ -57,18 +59,23 @@ func generateLevel(level: Int) -> Level {
     let dirCount = min(2 + level / 2, allDirections.count)
     let allowedDirections = Array(allDirections.prefix(dirCount))
     
+    let seed = withUnsafeBytes(of: level) { Data($0) }
+    
     return Level(
-        id: level,
+        num: level,
         gridSize: gridSize,
         orbCount: gridSize * gridSize,
         timeLimit: timeLimit,
         allowedColors: allowedColors,
-        allowedDirections: allowedDirections
+        allowedDirections: allowedDirections,
+        rng: GKARC4RandomSource(seed: seed)
     )
 }
 
 func getNewOrb(level: Level) -> Orb {
-    return Orb(color: level.allowedColors.randomElement()!, direction: level.allowedDirections.randomElement()!)
+    let color = level.allowedColors[level.rng.nextInt(upperBound: level.allowedColors.count)]
+    let dir = level.allowedDirections[level.rng.nextInt(upperBound: level.allowedDirections.count)]
+    return Orb(color: color, direction: dir)
 }
 
 func generateOrbs(level: Level) -> [Orb] {
