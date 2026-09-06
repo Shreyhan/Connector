@@ -83,13 +83,8 @@ func generateLevel(level: Int) -> Level {
     let gridSize = min(3 + level / 3, 10)
     let timeLimit = max(60 - Double(level) * 2, 30)
     
-    let allColors: [OrbColor] = OrbColor.allCases
-    let colorCount = min(1 + level / 2, allColors.count)
-    let allowedColors = Array(allColors.prefix(colorCount))
-    
-    let allDirections: [OrbDirection] = OrbDirection.allCases
-    let dirCount = min(2 + level / 2, allDirections.count)
-    let allowedDirections = Array(allDirections.prefix(dirCount))
+    let allowedColors = OrbColor.getLevelColors(for: level)
+    let allowedDirections = OrbDirection.getLevelDirections(for: level)
     
     let seed = withUnsafeBytes(of: level) { Data($0) }
     

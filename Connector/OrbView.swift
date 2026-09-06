@@ -36,6 +36,14 @@ enum OrbDirection: CaseIterable {
         case .downRight: return index + gridSize + 1
         }
     }
+    
+    static func getLevelDirections(for level: Int) -> [OrbDirection] {
+        let allDirections: [OrbDirection] = OrbDirection.allCases
+        let dirCount = min(2 + level / 2, allDirections.count)
+        let allowedDirections = Array(allDirections.prefix(dirCount))
+        
+        return allowedDirections
+    }
 }
 
 enum OrbColor: CaseIterable {
@@ -53,6 +61,14 @@ enum OrbColor: CaseIterable {
         case .brown: Color.brown
         case .gray: Color.gray
         }
+    }
+    
+    static func getLevelColors(for level: Int) -> [OrbColor] {
+        let allColors: [OrbColor] = OrbColor.allCases
+        let colorCount = min(1 + level / 2, allColors.count)
+        let allowedColors = Array(allColors.prefix(colorCount))
+        
+        return allowedColors
     }
 }
 
