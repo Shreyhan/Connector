@@ -10,6 +10,7 @@ import SwiftUI
 // should drop, like gravity
 func deleteChain(selectedChain: [Int], orbs: [Orb], gridSize: Int, level: Level) -> [Orb] {
     guard selectedChain.count >= 3 else { return orbs }
+    let orbGenerator = OrbGenerator(level: level)
     var newOrbs = orbs
     
     for index in selectedChain {
@@ -20,7 +21,7 @@ func deleteChain(selectedChain: [Int], orbs: [Orb], gridSize: Int, level: Level)
             if i > 0 {
                 newOrbs[i * gridSize + col] = newOrbs[(i - 1) * gridSize + col]
             } else {
-                newOrbs[col] = getNewOrb(level: level)
+                newOrbs[col] = orbGenerator.getNextOrb()
             }
         }
     }
@@ -76,8 +77,8 @@ struct OrbGridView: View {
                                 )
                                 
                                 // Blend from one orb's color to the next
-                                let fromColor = orbs[fromIndex].color
-                                let toColor = orbs[toIndex].color
+                                let fromColor = orbs[fromIndex].color.color
+                                let toColor = orbs[toIndex].color.color
                                 let gradient = Gradient(colors: [fromColor, toColor])
                                 let shading = GraphicsContext.Shading.linearGradient(
                                     gradient,
@@ -147,7 +148,8 @@ struct OrbGridView: View {
 #Preview {
 //    @Previewable
     let lev = generateLevel(level: 2)
+    let generator = OrbGenerator(level: lev)
     OrbGridView(
-        level: lev, orbs: generateOrbs(level: lev)
+        level: lev, orbs: generator.generateOrbs()
     )
 }

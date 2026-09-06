@@ -27,7 +27,8 @@ struct PlayView: View {
         .onAppear {
             let newLevel = generateLevel(level: levelNum)
             level = newLevel
-            orbs = generateOrbs(level: newLevel)
+            let orbGenerator = OrbGenerator(level: newLevel)
+            orbs = orbGenerator.generateOrbs()
         }
     }
 }

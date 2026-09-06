@@ -14,9 +14,38 @@ struct Level {
     let gridSize: Int
     let orbCount: Int
     let timeLimit: TimeInterval
-    let allowedColors: [Color]
+    let allowedColors: [OrbColor]
     let allowedDirections: [OrbDirection]
-    let rng: GKARC4RandomSource
+    let seed: Data
+}
+
+class OrbGenerator {
+    private let rng: GKARC4RandomSource
+    private let allowedColors: [OrbColor]
+    private let allowedDirections: [OrbDirection]
+    private let initialOrbCount: Int
+    
+    init(level: Level) {
+        self.rng = GKARC4RandomSource(seed: level.seed)
+        self.allowedColors = level.allowedColors
+        self.allowedDirections = level.allowedDirections
+        self.initialOrbCount = level.orbCount
+    }
+    
+    func getNextOrb() -> Orb {
+        let color = allowedColors[rng.nextInt(upperBound: allowedColors.count)]
+        let dir = allowedDirections[rng.nextInt(upperBound: allowedDirections.count)]
+        return Orb(color: color, direction: dir)
+    }
+
+    func generateOrbs() -> [Orb] {
+        var orbs:[Orb] = []
+        for _ in 0..<initialOrbCount {
+            orbs.append(getNextOrb())
+        }
+        return orbs
+    }
+
 }
 
 @Model
@@ -54,11 +83,11 @@ func generateLevel(level: Int) -> Level {
     let gridSize = min(3 + level / 3, 10)
     let timeLimit = max(60 - Double(level) * 2, 30)
     
-    let allColors: [Color] = [.red, .blue, .green, .yellow, .purple, .orange, .pink, .brown, .gray]
+    let allColors: [OrbColor] = OrbColor.allCases
     let colorCount = min(1 + level / 2, allColors.count)
     let allowedColors = Array(allColors.prefix(colorCount))
     
-    let allDirections: [OrbDirection] = [.right, .down, .left, .up, .upRight, .upLeft, .downRight, .downLeft]
+    let allDirections: [OrbDirection] = OrbDirection.allCases
     let dirCount = min(2 + level / 2, allDirections.count)
     let allowedDirections = Array(allDirections.prefix(dirCount))
     
@@ -71,20 +100,6 @@ func generateLevel(level: Int) -> Level {
         timeLimit: timeLimit,
         allowedColors: allowedColors,
         allowedDirections: allowedDirections,
-        rng: GKARC4RandomSource(seed: seed)
+        seed: seed,
     )
-}
-
-func getNewOrb(level: Level) -> Orb {
-    let color = level.allowedColors[level.rng.nextInt(upperBound: level.allowedColors.count)]
-    let dir = level.allowedDirections[level.rng.nextInt(upperBound: level.allowedDirections.count)]
-    return Orb(color: color, direction: dir)
-}
-
-func generateOrbs(level: Level) -> [Orb] {
-    var orbs:[Orb] = []
-    for _ in 0..<level.orbCount {
-        orbs.append(getNewOrb(level: level))
-    }
-    return orbs
 }

@@ -38,9 +38,27 @@ enum OrbDirection: CaseIterable {
     }
 }
 
+enum OrbColor: CaseIterable {
+    case red, blue, green, yellow, purple, orange, pink, brown, gray
+    
+    var color: Color {
+        switch self {
+        case .red: Color.red
+        case .blue: Color.blue
+        case .green: Color.green
+        case .yellow: Color.yellow
+        case .purple: Color.purple
+        case .orange: Color.orange
+        case .pink: Color.pink
+        case .brown: Color.brown
+        case .gray: Color.gray
+        }
+    }
+}
+
 struct Orb: Identifiable {
     let id = UUID()
-    var color: Color = .red
+    var color: OrbColor
     var direction: OrbDirection
     var isSelected: Bool = false
 }
@@ -51,10 +69,10 @@ struct OrbView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(orb.isSelected ? orb.color : orb.color.opacity(0.25))
+                .fill(orb.isSelected ? orb.color.color : orb.color.color.opacity(0.25))
                 .overlay(
                     Circle()
-                        .strokeBorder(orb.color, lineWidth: orb.isSelected ? 2 : 1)
+                        .strokeBorder(orb.color.color, lineWidth: orb.isSelected ? 2 : 1)
                 )
             
             Image(systemName: "arrow.up")
@@ -62,7 +80,7 @@ struct OrbView: View {
                 .scaledToFit()
                 .rotationEffect(orb.direction.angle)
                 .scaleEffect(0.5)
-                .foregroundStyle(orb.isSelected ? .white : orb.color)
+                .foregroundStyle(orb.isSelected ? .white : orb.color.color)
         }
         .aspectRatio(1, contentMode: .fit)
         .scaleEffect(orb.isSelected ? 1.1 : 1.0)
@@ -71,9 +89,9 @@ struct OrbView: View {
 }
 
 #Preview("straight") {
-    OrbView(orb: Orb(direction: .up))
+    OrbView(orb: Orb(color: .red, direction: .up))
 }
 
 #Preview("diag") {
-    OrbView(orb: Orb(direction: .upLeft))
+    OrbView(orb: Orb(color: .red, direction: .upLeft))
 }
