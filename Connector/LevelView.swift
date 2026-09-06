@@ -15,9 +15,8 @@ struct LevelView: View {
         NavigationStack {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(1...25, id: \.self) { level in
-                    let lev = generateLevel(level: level)
-                    NavigationLink(destination: PlayView(level: lev, orbs: generateOrbs(level: lev))) {
-                        LevelCardView(level: lev)
+                    NavigationLink(destination: PlayView(levelNum: level)) {
+                        LevelCardView(levelNum: level)
                     }
                 }
             }

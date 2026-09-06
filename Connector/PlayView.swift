@@ -8,20 +8,30 @@
 import SwiftUI
 
 struct PlayView: View {
-    let level: Level
-    let orbs: [Orb]
+    let levelNum: Int
+    
+    @State private var level: Level? = nil
+    @State private var orbs: [Orb] = []
     
     var body: some View {
         VStack {
             Text("TITLE OF LEVEL")
-            OrbGridView(level: level, orbs: orbs)
+            if let level {
+                OrbGridView(level: level, orbs: orbs)
+            } else {
+                ProgressView()
+            }
             Text("SOMETHIGN HERE")
             Divider()
+        }
+        .onAppear {
+            let newLevel = generateLevel(level: levelNum)
+            level = newLevel
+            orbs = generateOrbs(level: newLevel)
         }
     }
 }
 
 #Preview {
-    let lev = generateLevel(level: 4)
-    PlayView(level: lev, orbs: generateOrbs(level: lev))
+    PlayView(levelNum: 2)
 }

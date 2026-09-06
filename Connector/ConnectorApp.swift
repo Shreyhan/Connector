@@ -13,7 +13,7 @@ struct ConnectorApp: App {
     var body: some Scene {
         WindowGroup {
             LevelView()
-                .modelContainer(for: LevelManager.self)
+                .modelContainer(for: UserStats.self)
         }
     }
 }

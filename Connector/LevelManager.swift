@@ -20,29 +20,32 @@ struct Level {
 }
 
 @Model
-class LevelManager {
-    var levelStars: [Int]
+class UserStats {
+    var levelStars: [Int : Int]
 
     init() {
-        self.levelStars = []
+        self.levelStars = [:]
     }
     
-    func stars(for level: Int) -> Int {
-        guard level >= 1, level <= levelStars.count else { return 0 }
-        return levelStars[level - 1]
+    func getStars(for level: Int) -> Int {
+        return levelStars[level] ?? 0
     }
     
     func setStars(_ stars: Int, for level: Int) {
         guard level >= 1 else { return }
-        if level > levelStars.count {
-            levelStars.append(contentsOf: Array(repeating: 0, count: level - levelStars.count))
+        levelStars[level] = stars
+    }
+    
+    func updateStars(_ stars: Int, for level: Int) {
+        let currentStars = getStars(for: level)
+        if currentStars < stars {
+            setStars(stars, for: level)
         }
-        levelStars[level - 1] = max(levelStars[level - 1], stars)
     }
     
     func isUnlocked(_ level: Int) -> Bool {
         if level == 1 { return true }
-        return stars(for: level - 1) > 0
+        return getStars(for: level - 1) > 0
     }
 }
 

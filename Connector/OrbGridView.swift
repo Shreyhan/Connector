@@ -36,7 +36,6 @@ struct OrbGridView: View {
     @State private var cellHeight: CGFloat = 0
     
     var body: some View {
-        
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: level.gridSize), spacing: 0) {
             ForEach(orbs) { orb in
                 OrbView(orb: orb)
