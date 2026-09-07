@@ -11,8 +11,13 @@ import Combine
 struct PlayView: View {
     let levelNum: Int
     
-    @State private var level: Level? = nil
-    @State private var orbs: [Orb] = []
+    private var level: Level {
+        generateLevel(level: levelNum)
+    }
+    
+    private var orbGenerator: OrbGenerator {
+        OrbGenerator(level: level)
+    }
     
     // timer
     @State private var timeRemaining: Double = 1.0
@@ -25,37 +30,26 @@ struct PlayView: View {
         VStack {
             Text("Level: \(levelNum)")
                 .font(.title.bold())
-            if let level {
-                VStack {
-                    OrbGridView(level: level, orbs: orbs)
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                )
-                .border(Color.gray.opacity(0.4))
-                
-            } else {
-                ProgressView()
+            VStack {
+                OrbGridView(level: level, orbGenerator: orbGenerator)
             }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+            )
+            .border(Color.gray.opacity(0.4))
             
-            if let level {
-                VStack(alignment: .leading) {
-                    ProgressView(value: timeRemaining, total: level.timeLimit)
-                        .scaleEffect(x: 1, y: 4, anchor: .center)
-                    Text("\(Int(timeRemaining))s remaining")
-                        .font(.caption2)
-                }
-                .padding()
+            VStack(alignment: .leading) {
+                ProgressView(value: timeRemaining, total: level.timeLimit)
+                    .scaleEffect(x: 1, y: 4, anchor: .center)
+                Text("\(Int(timeRemaining))s remaining")
+                    .font(.caption2)
             }
+            .padding()
         }
         .onAppear {
-            let newLevel = generateLevel(level: levelNum)
-            level = newLevel
-            timeRemaining = newLevel.timeLimit
-            endDate = .now.addingTimeInterval(newLevel.timeLimit)
-            let orbGenerator = OrbGenerator(level: newLevel)
-            orbs = orbGenerator.generateOrbs()
+            timeRemaining = level.timeLimit
+            endDate = .now.addingTimeInterval(level.timeLimit)
         }
         .onReceive(timer) { _ in
             timeRemaining = max(0, endDate.timeIntervalSince(.now))

@@ -8,9 +8,8 @@
 import SwiftUI
 
 // should drop, like gravity
-func deleteChain(selectedChain: [Int], orbs: [Orb], gridSize: Int, level: Level) -> [Orb] {
+func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator, gridSize: Int, level: Level) -> [Orb] {
     guard selectedChain.count >= 3 else { return orbs }
-    let orbGenerator = OrbGenerator(level: level)
     var newOrbs = orbs
     
     for index in selectedChain {
@@ -30,9 +29,10 @@ func deleteChain(selectedChain: [Int], orbs: [Orb], gridSize: Int, level: Level)
 }
 
 struct OrbGridView: View {
-    @State var level: Level
-    @State var orbs: [Orb]
-    @State var selectedChain: [Int] = []
+    let level: Level
+    let orbGenerator: OrbGenerator
+    @State private var selectedChain: [Int] = []
+    @State private var orbs: [Orb] = []
     @State private var cellWidth: CGFloat = 0
     @State private var cellHeight: CGFloat = 0
     
@@ -43,6 +43,9 @@ struct OrbGridView: View {
                     .padding(5)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
+        }
+        .onAppear {
+            orbs = orbGenerator.generateOrbs()
         }
         .background(
             GeometryReader { geo in //create clear background to calculate size
@@ -137,7 +140,7 @@ struct OrbGridView: View {
                     withAnimation(
                         .interpolatingSpring(mass: 1.0, stiffness: 250, damping: 25, initialVelocity: 8)
                     ) {
-                        orbs = deleteChain(selectedChain: selectedChain, orbs: orbs, gridSize: level.gridSize, level: level)
+                        orbs = deleteChain(selectedChain: selectedChain, orbs: orbs, orbGenerator: orbGenerator, gridSize: level.gridSize, level: level)
                     }
                     selectedChain.removeAll()
                 }
@@ -147,9 +150,11 @@ struct OrbGridView: View {
 
 #Preview {
 //    @Previewable
+//    @State
     let lev = generateLevel(level: 2)
-    let generator = OrbGenerator(level: lev)
+    let gen = OrbGenerator(level: lev)
     OrbGridView(
-        level: lev, orbs: generator.generateOrbs()
+        level: lev,
+        orbGenerator: gen,
     )
 }
