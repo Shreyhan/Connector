@@ -8,8 +8,9 @@
 import SwiftUI
 
 // should drop, like gravity
-func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator, gridSize: Int, level: Level) -> [Orb] {
+func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator) -> [Orb] {
     guard selectedChain.count >= 3 else { return orbs }
+    let gridSize = orbGenerator.getGridSize()
     var newOrbs = orbs
     
     for index in selectedChain {
@@ -140,7 +141,7 @@ struct OrbGridView: View {
                     withAnimation(
                         .interpolatingSpring(mass: 1.0, stiffness: 250, damping: 25, initialVelocity: 8)
                     ) {
-                        orbs = deleteChain(selectedChain: selectedChain, orbs: orbs, orbGenerator: orbGenerator, gridSize: level.gridSize, level: level)
+                        orbs = deleteChain(selectedChain: selectedChain, orbs: orbs, orbGenerator: orbGenerator)
                     }
                     selectedChain.removeAll()
                 }

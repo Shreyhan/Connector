@@ -24,12 +24,14 @@ class OrbGenerator {
     private let allowedColors: [OrbColor]
     private let allowedDirections: [OrbDirection]
     private let initialOrbCount: Int
+    private let gridSize: Int
     
     init(level: Level) {
         self.rng = GKARC4RandomSource(seed: level.seed)
         self.allowedColors = level.allowedColors
         self.allowedDirections = level.allowedDirections
         self.initialOrbCount = level.orbCount
+        self.gridSize = level.gridSize
     }
     
     func getNextOrb() -> Orb {
@@ -44,6 +46,10 @@ class OrbGenerator {
             orbs.append(getNextOrb())
         }
         return orbs
+    }
+    
+    func getGridSize() -> Int {
+        return gridSize
     }
 
 }
