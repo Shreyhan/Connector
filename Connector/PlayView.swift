@@ -12,13 +12,8 @@ struct PlayView: View {
     let levelNum: Int
     
     private var level: Level {
-        generateLevel(level: levelNum)
+        Level(num: levelNum)
     }
-    
-    private var orbGenerator: OrbGenerator {
-        OrbGenerator(level: level)
-    }
-    
     // timer
     @State private var timeRemaining: Double = 1.0
     @State private var endDate: Date = .now
@@ -31,7 +26,7 @@ struct PlayView: View {
             Text("Level: \(levelNum)")
                 .font(.title.bold())
             VStack {
-                OrbGridView(level: level, orbGenerator: orbGenerator)
+                OrbGridView(level: level)
             }
             .padding()
             .background(

@@ -31,7 +31,9 @@ func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator) 
 
 struct OrbGridView: View {
     let level: Level
-    let orbGenerator: OrbGenerator
+    private var orbGenerator: OrbGenerator {
+        OrbGenerator(level: level)
+    }
     @State private var selectedChain: [Int] = []
     @State private var orbs: [Orb] = []
     @State private var cellWidth: CGFloat = 0
@@ -152,10 +154,8 @@ struct OrbGridView: View {
 #Preview {
 //    @Previewable
 //    @State
-    let lev = generateLevel(level: 2)
-    let gen = OrbGenerator(level: lev)
+    let lev = Level(num: 2)
     OrbGridView(
-        level: lev,
-        orbGenerator: gen,
+        level: lev
     )
 }
