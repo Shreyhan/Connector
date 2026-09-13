@@ -131,18 +131,18 @@ struct OrbGenerator {
 
         if optimalLength >= level.minChainSize {
             print("optimal length chain starts at: \(optimalLengthStart!)")
-            print("chain length: \(optimalLength) : (\(optimalLengthStart! / level.gridSize), \(optimalLengthStart! % level.gridSize))")
+            print("chain length: \(optimalLength) : (\((optimalLengthStart! % level.gridSize) + 1), \((optimalLengthStart! / level.gridSize) + 1))")
             print("score for this chain: \(lengthScore)")
             print("")
             print("optimal SCORE chain starts at: \(optimalScoreStart!)")
-            print("chain score: \(optimalScore) : (\(optimalScoreStart! / level.gridSize), \(optimalScoreStart! % level.gridSize))")
+            print("chain score: \(optimalScore) : (\((optimalScoreStart! % level.gridSize) + 1), \((optimalScoreStart! / level.gridSize) + 1))")
             return true
         }
         
         return false
     }
     
-    private func chain(from start: Int, in orbs: [Orb]) -> [Orb] {
+    private func chain(from start: Int, in orbs: [Orb], sameColorOnly: Bool = false) -> [Orb] {
         var visited = [orbs[start]]
         var currentIndex = start
         var currentDirection = orbs[currentIndex].direction
@@ -150,6 +150,7 @@ struct OrbGenerator {
         
         while let n = nextIndex {
             guard !visited.contains(orbs[n]) else { return visited }
+            guard !(sameColorOnly && orbs[currentIndex].color == orbs[n].color) else { return visited }
             visited.append(orbs[n])
             currentIndex = n
             currentDirection = orbs[currentIndex].direction
@@ -166,7 +167,9 @@ struct OrbGenerator {
     
     /// returns the score for the longest possible chain starting at a certain orb
     private func chainScore(from start: Int, in orbs: [Orb]) -> Double {
-        return scoreForChain(chain(from: start, in: orbs))
+        let fullChainScore = scoreForChain(chain(from: start, in: orbs))
+        let colorChainScore = scoreForChain(chain(from: start, in: orbs, sameColorOnly: true))
+        return max(fullChainScore, colorChainScore)
     }
     
     

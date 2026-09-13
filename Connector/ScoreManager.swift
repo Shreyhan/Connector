@@ -51,8 +51,8 @@ func scoreForChain(_ orbs: [Orb]) -> Double {
     var multiplier = 10.0
     
     // all orbs same color!
-    if orbs.contains(where: { $0.color == orbs[0].color}) {
-        multiplier *= 2
+    if orbs.allSatisfy({ $0.color == orbs[0].color }) {
+        multiplier *= 3
     }
     
     // TODO: if starting orb is == end orb (theres a loop, loop must be size >=4)
