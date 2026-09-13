@@ -16,12 +16,14 @@ struct Level {
     let timeLimit: TimeInterval
     let allowedColors: [OrbColor]
     let allowedDirections: [OrbDirection]
+    let minChainSize: Int
     let rng: GKARC4RandomSource
     
     init(num: Int) {
         // 25 levels for now?
         let gridSize = min(3 + num / 3, 10)
         let timeLimit = max(60 - Double(num) * 2, 30)
+        let minChainSize = min(3 + (num - 1) / 5, 6) // increases chain length by 1 every 5 levels
         
         let seed = withUnsafeBytes(of: num) { Data($0) }
         
@@ -31,6 +33,7 @@ struct Level {
         self.timeLimit = timeLimit
         self.allowedColors = OrbColor.getLevelColors(for: num)
         self.allowedDirections = OrbDirection.getLevelDirections(for: num)
+        self.minChainSize = minChainSize
         self.rng = GKARC4RandomSource(seed: seed)
         
     }
@@ -53,8 +56,36 @@ struct OrbGenerator {
         return orbs
     }
     
-    func getGridSize() -> Int {
-        return level.gridSize
-    }
+//    func getGridSize() -> Int {
+//        return level.gridSize
+//    }
 
+    /// gives a new grid with the selected chain being deleted, and a new chain replacing it
+    /// orbs should "drop down" like a gravity effect is pulling them down
+    ///
+    /// - Parameters
+    ///     - selectedChain: the actual order of orbs the user selects
+    ///     - orbs: the entire grid of orbs
+    /// - Returns
+    ///     - a new grid of orbs with the selected chain being deleted and new orbs replacing them
+    func deleteChain(selectedChain: [Int], orbs: [Orb]) -> [Orb] {
+        guard selectedChain.count >= level.minChainSize else { return orbs }
+        let gridSize = level.gridSize
+        var newOrbs = orbs
+        
+        for index in selectedChain {
+            let row = index / gridSize
+            let col = index % gridSize
+            
+            for i in stride(from: row, through: 0, by: -1) {
+                if i > 0 {
+                    newOrbs[i * gridSize + col] = newOrbs[(i - 1) * gridSize + col]
+                } else {
+                    newOrbs[col] = getNextOrb()
+                }
+            }
+        }
+        
+        return newOrbs
+    }
 }

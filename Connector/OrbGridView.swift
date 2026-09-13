@@ -7,36 +7,6 @@
 
 import SwiftUI
 
-/// gives a new grid with the selected chain being deleted, and a new chain replacing it
-/// orbs should "drop down" like a gravity effect is pulling them down
-///
-/// - Parameters
-///     - selectedChain: the actual order of orbs the user selects
-///     - orbs: the entire grid of orbs
-///     - orbGenerator: the generator being used to delete orbs
-/// - Returns
-///     - a new grid of orbs with the selected chain being deleted and new orbs replacing them
-func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator) -> [Orb] {
-    guard selectedChain.count >= 3 else { return orbs }
-    let gridSize = orbGenerator.getGridSize()
-    var newOrbs = orbs
-    
-    for index in selectedChain {
-        let row = index / gridSize
-        let col = index % gridSize
-        
-        for i in stride(from: row, through: 0, by: -1) {
-            if i > 0 {
-                newOrbs[i * gridSize + col] = newOrbs[(i - 1) * gridSize + col]
-            } else {
-                newOrbs[col] = orbGenerator.getNextOrb()
-            }
-        }
-    }
-    
-    return newOrbs
-}
-
 struct OrbGridView: View {
     @State var level: Level
     
@@ -151,7 +121,7 @@ struct OrbGridView: View {
                     withAnimation(
                         .interpolatingSpring(mass: 1.0, stiffness: 250, damping: 25, initialVelocity: 8)
                     ) {
-                        orbs = deleteChain(selectedChain: selectedChain, orbs: orbs, orbGenerator: orbGenerator)
+                        orbs = orbGenerator.deleteChain(selectedChain: selectedChain, orbs: orbs)
                     }
                     selectedChain.removeAll()
                 }
