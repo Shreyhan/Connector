@@ -19,7 +19,7 @@ struct Level {
     let seed: Data
 }
 
-class OrbGenerator {
+struct OrbGenerator {
     private let rng: GKARC4RandomSource
     private let allowedColors: [OrbColor]
     private let allowedDirections: [OrbDirection]
@@ -52,36 +52,6 @@ class OrbGenerator {
         return gridSize
     }
 
-}
-
-@Model
-class UserStats {
-    var levelStars: [Int : Int]
-
-    init() {
-        self.levelStars = [:]
-    }
-    
-    func getStars(for level: Int) -> Int {
-        return levelStars[level] ?? 0
-    }
-    
-    func setStars(_ stars: Int, for level: Int) {
-        guard level >= 1 else { return }
-        levelStars[level] = stars
-    }
-    
-    func updateStars(_ stars: Int, for level: Int) {
-        let currentStars = getStars(for: level)
-        if currentStars < stars {
-            setStars(stars, for: level)
-        }
-    }
-    
-    func isUnlocked(_ level: Int) -> Bool {
-        if level == 1 { return true }
-        return getStars(for: level - 1) > 0
-    }
 }
 
 func generateLevel(level: Int) -> Level {
