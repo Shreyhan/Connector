@@ -42,6 +42,8 @@ struct OrbGridView: View {
                             cellWidth = geo.size.width / CGFloat(level.gridSize)
                             cellHeight = geo.size.height / CGFloat(level.orbCount / level.gridSize)
                         }
+                    
+                    // creates the connecting chain view
                     if !selectedChain.isEmpty {
                         Canvas { context, size in
                             for i in 0..<(selectedChain.count - 1) {

@@ -109,49 +109,64 @@ struct OrbGenerator {
     /// checks a valid move exists on the board
     func validMoveExists(orbs: [Orb]) -> Bool {
         var optimalLength: Int = 0
-        var optimalStart: Int?
+        var optimalLengthStart: Int?
+        var lengthScore: Double = 0
+        var optimalScore: Double = 0
+        var optimalScoreStart: Int?
         
-        // TODO: Remove and replace with commented code, only need to know it exists
-        // nice to know how much the longest is while developing
-        // possibly a debug version later?
         for start in orbs.indices {
             let length = chainLength(from: start, orbs: orbs)
+            let score = chainScore(from: start, in: orbs)
             if length >= optimalLength {
                 optimalLength = length
-                optimalStart = start
+                optimalLengthStart = start
+                lengthScore = score
             }
             
-//            if chainLength(from: start, orbs: orbs) >= level.minChainSize {
-//                print("valid move exists starting at: \(start)")
-//                return true
-//            }
+            if score >= optimalScore {
+                optimalScore = score
+                optimalScoreStart = start
+            }
         }
 
         if optimalLength >= level.minChainSize {
-            print("optimal chain starts at: \(optimalStart!)")
-            print("chain length: \(optimalLength)")
-            print("row: \(optimalStart! / level.gridSize)")
-            print("col: \(optimalStart! % level.gridSize)")
+            print("optimal length chain starts at: \(optimalLengthStart!)")
+            print("chain length: \(optimalLength) : (\(optimalLengthStart! / level.gridSize), \(optimalLengthStart! % level.gridSize))")
+            print("score for this chain: \(lengthScore)")
+            print("")
+            print("optimal SCORE chain starts at: \(optimalScoreStart!)")
+            print("chain score: \(optimalScore) : (\(optimalScoreStart! / level.gridSize), \(optimalScoreStart! % level.gridSize))")
             return true
         }
         
         return false
     }
     
+    private func chain(from start: Int, in orbs: [Orb]) -> [Orb] {
+        var visited = [orbs[start]]
+        var currentIndex = start
+        var currentDirection = orbs[currentIndex].direction
+        var nextIndex = currentDirection.nextValidMove(index: currentIndex, gridSize: level.gridSize)
+        
+        while let n = nextIndex {
+            guard !visited.contains(orbs[n]) else { return visited }
+            visited.append(orbs[n])
+            currentIndex = n
+            currentDirection = orbs[currentIndex].direction
+            nextIndex = currentDirection.nextValidMove(index: currentIndex, gridSize: level.gridSize)
+        }
+        
+        return visited
+    }
+    
     /// returns the longest possible chain starting at a certain orb
     private func chainLength(from start: Int, orbs: [Orb]) -> Int {
-        var visited: Set<Int> = [start]
-        var current = start
-        var direction = orbs[current].direction
-        var next = direction.nextValidMove(index: current, gridSize: level.gridSize)
-        
-        while let n = next, !visited.contains(next!) {
-            visited.insert(n)
-            current = n
-            direction = orbs[current].direction
-            next = direction.nextValidMove(index: current, gridSize: level.gridSize)
-        }
-        return visited.count
+        return chain(from: start, in: orbs).count
+    }
+    
+    /// returns the score for the longest possible chain starting at a certain orb
+    private func chainScore(from start: Int, in orbs: [Orb]) -> Double {
+        return scoreForChain(chain(from: start, in: orbs))
     }
     
     

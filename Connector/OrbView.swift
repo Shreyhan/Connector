@@ -102,7 +102,7 @@ enum OrbColor: CaseIterable {
     }
 }
 
-struct Orb: Identifiable {
+struct Orb: Identifiable, Equatable, Hashable {
     let id = UUID()
     var color: OrbColor
     var direction: OrbDirection

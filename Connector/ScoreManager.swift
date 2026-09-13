@@ -46,8 +46,19 @@ class UserSettings {
     }
 }
 
-func scoreForChain(length: Int) -> Int {
-    return length * (length - 1) * 10 // superlinear
+func scoreForChain(_ orbs: [Orb]) -> Double {
+    let length = Double(orbs.count)
+    var multiplier = 10.0
+    
+    // all orbs same color!
+    if orbs.contains(where: { $0.color == orbs[0].color}) {
+        multiplier *= 2
+    }
+    
+    // TODO: if starting orb is == end orb (theres a loop, loop must be size >=4)
+    
+    
+    return length * (length - 1) * multiplier
 }
 
 func targetScore(for level: Level) -> Int {
