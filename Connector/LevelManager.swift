@@ -42,24 +42,35 @@ struct Level {
 struct OrbGenerator {
     let level: Level
     
+    /// creates an orb that matches the restraints put on by the level
+    ///
+    ///  - Returns
+    ///     - a new orb for a given level
     func getNextOrb() -> Orb {
         let color = level.allowedColors[level.rng.nextInt(upperBound: level.allowedColors.count)]
         let dir = level.allowedDirections[level.rng.nextInt(upperBound: level.allowedDirections.count)]
         return Orb(color: color, direction: dir)
     }
 
+    /// creates an initial grid of orbs
+    ///
+    /// - Returns
+    ///     - a new grid of orbs for a given level
     func generateOrbs() -> [Orb] {
         var orbs:[Orb] = []
         for _ in 0..<level.orbCount {
             orbs.append(getNextOrb())
         }
+        
+        while !validMoveExists(orbs: orbs) {
+            print("no valid moves exists... shuffling...")
+            // TODO: display a card, show orbs being shuffled
+            orbs = level.rng.arrayByShufflingObjects(in: orbs) as! [Orb]
+        }
+        
         return orbs
     }
     
-//    func getGridSize() -> Int {
-//        return level.gridSize
-//    }
-
     /// gives a new grid with the selected chain being deleted, and a new chain replacing it
     /// orbs should "drop down" like a gravity effect is pulling them down
     ///
@@ -86,6 +97,43 @@ struct OrbGenerator {
             }
         }
         
+        while !validMoveExists(orbs: newOrbs) {
+            print("no valid moves exists... shuffling...")
+            // TODO: display a card, show orbs being shuffled
+            newOrbs = level.rng.arrayByShufflingObjects(in: newOrbs) as! [Orb]
+        }
+        
         return newOrbs
     }
+    
+    /// checks a valid move exists on the board
+    func validMoveExists(orbs: [Orb]) -> Bool {
+        for start in orbs.indices {
+            if chainLength(from: start, orbs: orbs) >= level.minChainSize {
+                print("valid move exists starting at: \(start)")
+                return true
+            }
+        }
+
+        print("no valid move exists")
+        return false
+    }
+    
+    /// returns the longest possible chain starting at a certain orb
+    private func chainLength(from start: Int, orbs: [Orb]) -> Int {
+        var visited: Set<Int> = [start]
+        var current = start
+        var direction = orbs[current].direction
+        var next = direction.nextValidMove(index: current, gridSize: level.gridSize)
+        
+        while let n = next, !visited.contains(next!) {
+            visited.insert(n)
+            current = n
+            direction = orbs[current].direction
+            next = direction.nextValidMove(index: current, gridSize: level.gridSize)
+        }
+        return visited.count
+    }
+    
+    
 }

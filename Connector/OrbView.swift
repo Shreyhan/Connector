@@ -24,7 +24,24 @@ enum OrbDirection: CaseIterable {
         }
     }
     
-    func nextValidMove(index: Int, gridSize: Int) -> Int {
+    var goingUp: Bool {
+        self == .up || self == .upLeft || self == .upRight
+    }
+    
+    var goingDown: Bool {
+        self == .down || self == .downLeft || self == .downRight
+    }
+    
+    var goingRight: Bool {
+        self == .right || self == .upRight || self == .downRight
+    }
+    
+    var goingLeft: Bool {
+        self == .left || self == .upLeft || self == .downLeft
+    }
+
+    
+    func nextMove(index: Int, gridSize: Int) -> Int {
         switch self {
         case .up: return index - gridSize
         case .down: return index + gridSize
@@ -35,6 +52,19 @@ enum OrbDirection: CaseIterable {
         case .downLeft: return index + gridSize - 1
         case .downRight: return index + gridSize + 1
         }
+    }
+    
+    func nextValidMove(index: Int, gridSize: Int) -> Int? {
+        let row = index / gridSize
+        let col = index % gridSize
+        
+        if goingUp && row == 0 { return nil }
+        if goingDown && row == gridSize - 1 { return nil }
+        if goingLeft && col == 0 { return nil }
+        if goingRight && col == gridSize - 1 { return nil }
+        
+        return nextMove(index: index, gridSize: gridSize)
+        
     }
     
     static func getLevelDirections(for level: Int) -> [OrbDirection] {

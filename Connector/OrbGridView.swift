@@ -94,9 +94,9 @@ struct OrbGridView: View {
                     let col = Int(location.x / cellWidth)
                     let row = Int(location.y / cellHeight)
                     
-                    guard row >= 0, row < orbs.count / level.gridSize, col >= 0, col < level.gridSize else { return }
-                    
                     let index = row * level.gridSize + col
+                    
+                    // backtracking
                     if selectedChain.count >= 2 && selectedChain[selectedChain.count - 2] == index {
                         let removed = selectedChain.removeLast()
                         orbs[removed].isSelected = false
@@ -104,11 +104,13 @@ struct OrbGridView: View {
                     
                     if !selectedChain.contains(index) {
                         if let lastIndex = selectedChain.last {
+                            // a chain already exists
                             if index == orbs[lastIndex].direction.nextValidMove(index: lastIndex, gridSize: level.gridSize) {
                                 orbs[index].isSelected.toggle()
                                 selectedChain.append(index)
                             }
                         } else {
+                            // empty chain doesnt need to check where to start from
                             orbs[index].isSelected.toggle()
                             selectedChain.append(index)
                         }
