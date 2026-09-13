@@ -23,17 +23,14 @@ struct Level {
         let gridSize = min(3 + num / 3, 10)
         let timeLimit = max(60 - Double(num) * 2, 30)
         
-        let allowedColors = OrbColor.getLevelColors(for: num)
-        let allowedDirections = OrbDirection.getLevelDirections(for: num)
-        
         let seed = withUnsafeBytes(of: num) { Data($0) }
         
         self.num = num
         self.gridSize = gridSize
         self.orbCount = gridSize * gridSize
         self.timeLimit = timeLimit
-        self.allowedColors = allowedColors
-        self.allowedDirections = allowedDirections
+        self.allowedColors = OrbColor.getLevelColors(for: num)
+        self.allowedDirections = OrbDirection.getLevelDirections(for: num)
         self.rng = GKARC4RandomSource(seed: seed)
         
     }

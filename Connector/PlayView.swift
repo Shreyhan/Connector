@@ -10,7 +10,6 @@ import Combine
 
 struct PlayView: View {
     let levelNum: Int
-    
     private var level: Level {
         Level(num: levelNum)
     }
@@ -23,7 +22,7 @@ struct PlayView: View {
     
     var body: some View {
         VStack {
-            Text("Level: \(levelNum)")
+            Text("Level: \(level.num)")
                 .font(.title.bold())
             VStack {
                 OrbGridView(level: level)

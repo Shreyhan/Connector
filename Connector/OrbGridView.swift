@@ -7,7 +7,15 @@
 
 import SwiftUI
 
-// should drop, like gravity
+/// gives a new grid with the selected chain being deleted, and a new chain replacing it
+/// orbs should "drop down" like a gravity effect is pulling them down
+///
+/// - Parameters
+///     - selectedChain: the actual order of orbs the user selects
+///     - orbs: the entire grid of orbs
+///     - orbGenerator: the generator being used to delete orbs
+/// - Returns
+///     - a new grid of orbs with the selected chain being deleted and new orbs replacing them
 func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator) -> [Orb] {
     guard selectedChain.count >= 3 else { return orbs }
     let gridSize = orbGenerator.getGridSize()
@@ -30,14 +38,16 @@ func deleteChain(selectedChain: [Int], orbs: [Orb], orbGenerator: OrbGenerator) 
 }
 
 struct OrbGridView: View {
-    let level: Level
-    private var orbGenerator: OrbGenerator {
-        OrbGenerator(level: level)
-    }
+    @State var level: Level
+    
     @State private var selectedChain: [Int] = []
     @State private var orbs: [Orb] = []
     @State private var cellWidth: CGFloat = 0
     @State private var cellHeight: CGFloat = 0
+    
+    private var orbGenerator: OrbGenerator {
+        OrbGenerator(level: level)
+    }
     
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: level.gridSize), spacing: 0) {
@@ -109,8 +119,6 @@ struct OrbGridView: View {
                 .onChanged { value in
                     let location = value.location
                     
-                    print(cellWidth)
-                    print(cellHeight)
                     guard cellWidth > 0, cellHeight > 0 else { return }
                     
                     let col = Int(location.x / cellWidth)
@@ -153,8 +161,8 @@ struct OrbGridView: View {
 
 #Preview {
 //    @Previewable
-//    @State
-    let lev = Level(num: 2)
+//    @State 
+    var lev = Level(num: 2)
     OrbGridView(
         level: lev
     )
