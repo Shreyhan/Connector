@@ -108,14 +108,33 @@ struct OrbGenerator {
     
     /// checks a valid move exists on the board
     func validMoveExists(orbs: [Orb]) -> Bool {
+        var optimalLength: Int = 0
+        var optimalStart: Int?
+        
+        // TODO: Remove and replace with commented code, only need to know it exists
+        // nice to know how much the longest is while developing
+        // possibly a debug version later?
         for start in orbs.indices {
-            if chainLength(from: start, orbs: orbs) >= level.minChainSize {
-                print("valid move exists starting at: \(start)")
-                return true
+            let length = chainLength(from: start, orbs: orbs)
+            if length >= optimalLength {
+                optimalLength = length
+                optimalStart = start
             }
+            
+//            if chainLength(from: start, orbs: orbs) >= level.minChainSize {
+//                print("valid move exists starting at: \(start)")
+//                return true
+//            }
         }
 
-        print("no valid move exists")
+        if optimalLength >= level.minChainSize {
+            print("optimal chain starts at: \(optimalStart!)")
+            print("chain length: \(optimalLength)")
+            print("row: \(optimalStart! / level.gridSize)")
+            print("col: \(optimalStart! % level.gridSize)")
+            return true
+        }
+        
         return false
     }
     
